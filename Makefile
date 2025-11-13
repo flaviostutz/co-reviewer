@@ -1,4 +1,4 @@
-.PHONY: setup install build test lint run deploy undeploy all clean
+.PHONY: setup install build test lint run deploy undeploy publish all clean
 
 setup:
 	@echo "Setting up development environment..."
@@ -37,9 +37,10 @@ run:
 	@echo "Running co-reviewer..."
 	uv run python -m co_reviewer.cli
 
-run-server:
-	@echo "Starting API server..."
-	uv run uvicorn co_reviewer.api:app --reload
+publish:
+	@echo "Publishing package to registry..."
+	uv publish
+	@echo "Package published!"
 
 all: lint test build
 	@echo "All checks passed!"

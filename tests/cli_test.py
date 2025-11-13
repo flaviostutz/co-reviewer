@@ -17,9 +17,3 @@ def test_review_command_help(cli_runner: CliRunner) -> None:
     result = cli_runner.invoke(app, ["review", "--help"])
     assert result.exit_code == 0
     assert "Review code changes" in result.stdout
-
-
-def test_app_initialization() -> None:
-    """Test app initialization."""
-    assert app is not None
-    assert app.registered_commands

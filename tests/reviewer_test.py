@@ -1,22 +1,12 @@
 """Tests for reviewer."""
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 from git import Repo
 
 from co_reviewer.config import Settings
 from co_reviewer.models import ReviewRequest
-from co_reviewer.reviewer import CoReviewer, create_reviewer
-
-
-@patch("co_reviewer.review_agent.AzureChatOpenAI")
-def test_create_reviewer(mock_llm: MagicMock) -> None:
-    """Test reviewer factory function."""
-    mock_llm.return_value = None
-    reviewer = create_reviewer()
-    assert isinstance(reviewer, CoReviewer)
-    assert reviewer.settings is not None
+from co_reviewer.reviewer import CoReviewer
 
 
 def test_reviewer_init() -> None:

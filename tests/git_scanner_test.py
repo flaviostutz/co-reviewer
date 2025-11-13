@@ -113,3 +113,55 @@ def test_get_changes(tmp_path: Path) -> None:
     added = next(c for c in changes if c.file_path == "new.txt")
     assert added.change_type == FileChangeType.ADDED
     assert added.additions > 0
+
+
+def test_get_current_branch_detached(tmp_path: Path) -> None:
+    """Test getting current branch in detached HEAD state."""
+    # Create a git repo
+    repo = Repo.init(tmp_path)
+
+    # Create initial commit
+    test_file = tmp_path / "test.txt"
+    test_file.write_text("Initial content")
+    repo.index.add([str(test_file)])
+    commit = repo.index.commit("Initial commit")
+
+    # Initialize scanner
+    settings = Settings(
+        azure_openai_api_key="test-key",
+        azure_openai_endpoint="https://test.openai.azure.com/",
+    )
+    scanner = GitScanner(tmp_path, settings)
+
+    # Checkout detached HEAD
+    repo.head.reference = commit
+
+    # Get current branch - should return commit SHA
+    current_branch = scanner.get_current_branch()
+    assert current_branch != ""
+    assert len(current_branch) == 8  # First 8 chars of SHA
+
+
+def test_get_file_content(tmp_path: Path) -> None:
+    """Test getting file content at specific commit."""
+    # Create a git repo
+    repo = Repo.init(tmp_path)
+
+    # Create initial commit
+    test_file = tmp_path / "test.txt"
+    test_file.write_text("Test content")
+    repo.index.add([str(test_file)])
+    repo.index.commit("Initial commit")
+
+    # Initialize scanner
+    settings = Settings(
+        azure_openai_api_key="test-key",
+        azure_openai_endpoint="https://test.openai.azure.com/",
+    )
+    scanner = GitScanner(tmp_path, settings)
+
+    # Get file content
+    main_branch = "main" if "main" in [h.name for h in repo.heads] else "master"
+    content = scanner.get_file_content("test.txt", main_branch)
+
+    assert content == "Test content"

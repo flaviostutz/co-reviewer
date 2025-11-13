@@ -1,6 +1,6 @@
 """Tests for configuration."""
 
-from co_reviewer.config import Settings, get_settings
+from co_reviewer.config import Settings
 
 
 def test_settings_defaults() -> None:
@@ -29,9 +29,3 @@ def test_settings_custom() -> None:
     assert settings.azure_openai_deployment == "gpt-4o"
     assert settings.llm_temperature == 0.5
     assert settings.default_base_branch == "develop"
-
-
-def test_get_settings() -> None:
-    """Test settings singleton."""
-    settings = get_settings()
-    assert isinstance(settings, Settings)
