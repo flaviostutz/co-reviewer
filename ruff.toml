@@ -1,0 +1,34 @@
+# Ruff configuration
+# https://docs.astral.sh/ruff/
+
+line-length = 100
+target-version = "py310"
+output-format = "grouped"
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+
+[lint]
+select = ["ERA", "FAST", "ANN", "ASYNC", "S", "BLE", "FBT", "B", "A", "COM",
+    "C4", "DTZ", "T10", "DJ", "EM", "EXE", "FIX", "INT", "ISC", "ICN", "LOG", "G",
+    "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SIM", "SLOT", "TID",
+    "TC", "ARG", "PTH", "FLY", "I", "C90", "NPY", "PD", "N", "PERF", "E", "W",
+    "D", "F", "PGH", "PL", "UP", "FURB", "RUF", "TRY"]
+ignore = ["ANN002", "ANN003", "ANN401", "D100", "D101", "D102", "D103", "D104",
+    "D105", "D106", "D107", "COM812", "D203", "D213", "D400", "D401", "D404", "D415", 
+    "G004", "EM", "PLR2004", "TRY003", "TRY300", "BLE001", "C901", "PLR0912",
+    "ERA001", "PERF203"]
+
+[lint.mccabe]
+# Flag errors (`C901`) whenever the complexity level exceeds 5.
+max-complexity = 20
+
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]
+"*/test_*.py" = ["S101", "ANN201", "ANN001"]
+"shared/models/loan.py" = ["N805", "RUF012"]
+"agents/loan-approval/policies/generate_policies.py" = ["W291", "W293"]
