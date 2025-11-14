@@ -1,7 +1,12 @@
-name: Create Next Tag
+name: Next Tag
 
 on:
   workflow_dispatch:
+    inputs:
+      prerelease:
+        description: 'Create prerelease tag'
+        required: false
+        default: 'false'
 
 jobs:
   create-tag:
@@ -22,9 +27,15 @@ jobs:
       - name: Calculate next tag with monotag
         id: monotag
         run: |
-          NEXT_TAG=$(npx monotag)
+          if [ "${{ github.event.inputs.prerelease }}" = "true" ]; then
+            NEXT_TAG=$(npx monotag --pre)
+            echo "tag-type=prerelease" >> $GITHUB_OUTPUT
+          else
+            NEXT_TAG=$(npx monotag)
+            echo "tag-type=stable" >> $GITHUB_OUTPUT
+          fi
           echo "next-tag=${NEXT_TAG}" >> $GITHUB_OUTPUT
-          echo "Calculated next tag: ${NEXT_TAG}"
+          echo "Calculated next tag: ${NEXT_TAG} (${GITHUB_OUTPUT})"
 
       - name: Create tag
         if: steps.monotag.outputs.next-tag != ''
@@ -37,3 +48,4 @@ jobs:
               ref: 'refs/tags/${{ steps.monotag.outputs.next-tag }}',
               sha: context.sha
             })
+            core.notice(`✅ Created ${{ steps.monotag.outputs.tag-type }} tag: ${{ steps.monotag.outputs.next-tag }}`)
