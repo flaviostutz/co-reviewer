@@ -41,5 +41,5 @@ jobs:
             npx -y monotag tag-push --pre
           else
             echo "Creating and pushing stable tag..."
-            npx -y monotag tag-push
+            npx -y monotag tag-push --changelog-file=CHANGELOG.md
           fi
