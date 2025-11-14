@@ -3,7 +3,7 @@ name: Publish Package
 on:
   push:
     tags:
-      - 'v*'
+      - '*'
 
 jobs:
   validate-and-publish:
@@ -51,4 +51,4 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref_name }}
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref, '-') }}
