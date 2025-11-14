@@ -1,0 +1,42 @@
+name: Create Next Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-tag:
+    name: Calculate and Create Next Tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install monotag CLI
+        run: |
+          curl -sSL https://github.com/flaviostutz/monotag/releases/download/latest/monotag-$(uname -s)-$(uname -m) -o monotag
+          chmod +x monotag
+          sudo mv monotag /usr/local/bin/
+
+      - name: Calculate next tag with monotag
+        id: monotag
+        run: |
+          NEXT_TAG=$(monotag)
+          echo "next-tag=${NEXT_TAG}" >> $GITHUB_OUTPUT
+          echo "Calculated next tag: ${NEXT_TAG}"
+
+      - name: Create tag
+        if: steps.monotag.outputs.next-tag != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.monotag.outputs.next-tag }}',
+              sha: context.sha
+            })
