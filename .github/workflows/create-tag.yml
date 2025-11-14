@@ -31,10 +31,13 @@ jobs:
       - name: Calculate next tag with monotag
         id: monotag
         run: |
+          set -e
           if [ "${{ github.event.inputs.tag-type }}" = "prerelease" ]; then
-            NEXT_TAG=$(npx monotag --pre)
+            echo "Creating prerelease tag..."
+            NEXT_TAG=$(npx -y monotag --pre 2>&1) || { echo "Failed to calculate prerelease tag"; exit 1; }
           else
-            NEXT_TAG=$(npx monotag)
+            echo "Creating stable tag..."
+            NEXT_TAG=$(npx -y monotag 2>&1) || { echo "Failed to calculate stable tag"; exit 1; }
           fi
           echo "next-tag=${NEXT_TAG}" >> $GITHUB_OUTPUT
           echo "tag-type=${{ github.event.inputs.tag-type }}" >> $GITHUB_OUTPUT
