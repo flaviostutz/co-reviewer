@@ -1,9 +1,7 @@
 name: Create Next Tag
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   create-tag:
@@ -16,16 +14,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install monotag CLI
-        run: |
-          curl -sSL https://github.com/flaviostutz/monotag/releases/download/latest/monotag-$(uname -s)-$(uname -m) -o monotag
-          chmod +x monotag
-          sudo mv monotag /usr/local/bin/
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
       - name: Calculate next tag with monotag
         id: monotag
         run: |
-          NEXT_TAG=$(monotag)
+          NEXT_TAG=$(npx monotag)
           echo "next-tag=${NEXT_TAG}" >> $GITHUB_OUTPUT
           echo "Calculated next tag: ${NEXT_TAG}"
 
