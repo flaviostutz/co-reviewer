@@ -28,30 +28,18 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Calculate next tag with monotag
-        id: monotag
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and push tag with monotag
         run: |
           set -e
           if [ "${{ github.event.inputs.tag-type }}" = "prerelease" ]; then
-            echo "Creating prerelease tag..."
-            NEXT_TAG=$(npx -y monotag --pre 2>&1) || { echo "Failed to calculate prerelease tag"; exit 1; }
+            echo "Creating and pushing prerelease tag..."
+            npx -y monotag tag-push --pre
           else
-            echo "Creating stable tag..."
-            NEXT_TAG=$(npx -y monotag 2>&1) || { echo "Failed to calculate stable tag"; exit 1; }
+            echo "Creating and pushing stable tag..."
+            npx -y monotag tag-push
           fi
-          echo "next-tag=${NEXT_TAG}" >> $GITHUB_OUTPUT
-          echo "tag-type=${{ github.event.inputs.tag-type }}" >> $GITHUB_OUTPUT
-          echo "Calculated next tag: ${NEXT_TAG}"
-
-      - name: Create tag
-        if: steps.monotag.outputs.next-tag != ''
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.monotag.outputs.next-tag }}',
-              sha: context.sha
-            })
-            core.notice(`✅ Created ${{ steps.monotag.outputs.tag-type }} tag: ${{ steps.monotag.outputs.next-tag }}`)
