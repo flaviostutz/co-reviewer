@@ -6,7 +6,7 @@ on:
       tag-type:
         description: 'Tag type to create'
         required: true
-        default: 'stable'
+        default: 'prerelease'
         type: choice
         options:
           - stable
